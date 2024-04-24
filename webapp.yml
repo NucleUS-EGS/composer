@@ -6,12 +6,16 @@ services:
     build:
       context: .
       dockerfile: webapp.dockerfile
-    command: python3 manage.py runserver 3000 --noreload
+    command: bash -c "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:3000 --noreload"
+    restart: always
+    network_mode: "host"
     depends_on:
-      - database
+      db:
+        condition: service_healthy
     env_file:
       - webapp.env
-  database:
+
+  db:
     image: mysql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
@@ -19,10 +23,14 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: webapp
     ports:
-      - "3307:3306"
+      - 3307:3306
     volumes:
       - db_data:/data/db
-
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      
   adminer:
     image: adminer
     restart: always
