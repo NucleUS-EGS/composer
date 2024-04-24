@@ -1,19 +1,18 @@
 version: '3'
 
 services:
-  web:
-    image: webapp:latest
+  points:
+    image: points:latest
     build:
       context: .
-      dockerfile: webapp.dockerfile
-    command: bash -c "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:3000 --noreload"
+      dockerfile: points.dockerfile
     restart: always
     network_mode: "host"
     depends_on:
       db:
         condition: service_healthy
     env_file:
-      - webapp.env
+      - points.env
 
   db:
     image: mysql
@@ -23,7 +22,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: webapp
     ports:
-      - 3307:3306
+      - 3305:3306
     volumes:
       - db_data:/data/db
     healthcheck:
@@ -35,7 +34,7 @@ services:
     image: adminer
     restart: always
     ports:
-      - 8080:8080
+      - 8081:8080
 
 volumes:
   db_data:
