@@ -1,0 +1,135 @@
+version: '3'
+
+services:
+  # Auth service
+  auth:
+    image: auth:latest
+    build:
+      context: .
+      dockerfile: auth.dockerfile
+    command: flask run
+    network_mode: "host"
+    depends_on:
+      auth_db: 
+        condition: service_healthy 
+    env_file:
+      - auth.env
+
+  auth_db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: auth
+    ports:
+      - 3301:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Events service
+  events:
+    image: events:latest
+    build:
+      context: .
+      dockerfile: events.dockerfile
+    command: flask run
+    depends_on:
+      events_db:
+        condition: service_healthy
+    network_mode: "host"
+    env_file:
+      - events.env
+
+  events_db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: events
+    ports:
+      - "3302:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+
+  # Points service
+  points:
+    image: points:latest
+    build:
+      context: .
+      dockerfile: points.dockerfile
+    restart: always
+    command: flask run
+    network_mode: "host"
+    depends_on:
+      points_db:
+        condition: service_healthy
+    env_file:
+      - points.env
+
+  points_db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: EGS2324pass!
+      MYSQL_DATABASE: POINTS
+    ports:
+      - 3303:3306
+    volumes:
+      - points_db:/data/db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      
+
+  #Webapp
+  web:
+    image: webapp:latest
+    build:
+      context: .
+      dockerfile: webapp.dockerfile
+    command: bash -c "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:3000 --noreload"
+    restart: always
+    network_mode: "host"
+    depends_on:
+      web_db:
+        condition: service_healthy
+    env_file:
+      - webapp.env
+
+  web_db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: webapp
+    ports:
+      - 3300:3306
+    volumes:
+      - web_db:/data/db
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+
+  # Adminer
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8090:8080
+
+volumes:
+  events_db:
+  points_db:
+  web_db:

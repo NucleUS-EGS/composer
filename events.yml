@@ -6,14 +6,14 @@ services:
     image: events:latest
     build:
       context: .
-      dockerfile: event.dockerfile
+      dockerfile: events.dockerfile
     command: python3 app.py
     depends_on:
       db:
         condition: service_healthy
     network_mode: "host"
     env_file:
-      - event.env
+      - events.env
 
 
   db:

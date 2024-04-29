@@ -1,13 +1,8 @@
-# Diving into docker
-
 # Base image
 FROM python:3.10
 
-# Author of the dockerfile
-MAINTAINER Bárbara Moreira
-
-# Label
-LABEL version="1.0"
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends
 
 # Execute the command to create a folder
 RUN mkdir /app
@@ -22,10 +17,4 @@ COPY points-system/requirements.txt /app/
 RUN pip install -r requirements.txt
 
 # Copy the external code into the working directory
-COPY points-system/* /app/
-
-# Expose the port of the service
-EXPOSE 8080/tcp
-
-# Define the entrypoint
-ENTRYPOINT ["python3", "app.py"]
+COPY points-system/ /app/
