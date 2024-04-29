@@ -9,8 +9,6 @@ git clone --recursive git@github.com:NucleUS-EGS/composer.git
 
 ## Build
 
-### Webapp
-
 ```
-docker-compose -f webapp.yml up --build
+docker-compose up --build
 ```
