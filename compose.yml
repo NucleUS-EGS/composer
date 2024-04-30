@@ -24,6 +24,8 @@ services:
       MYSQL_DATABASE: auth
     ports:
       - 3301:3306
+    volumes:
+    - auth_data:/data/db
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
@@ -52,6 +54,8 @@ services:
       MYSQL_DATABASE: events
     ports:
       - "3302:3306"
+    volumes:
+      - events_data:/data/db
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
@@ -83,7 +87,7 @@ services:
     ports:
       - 3303:3306
     volumes:
-      - points_db:/data/db
+      - points_data:/data/db
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
@@ -115,7 +119,7 @@ services:
     ports:
       - 3300:3306
     volumes:
-      - web_db:/data/db
+      - web_data:/data/db
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
@@ -130,6 +134,7 @@ services:
       - 8090:8080
 
 volumes:
-  events_db:
-  points_db:
-  web_db:
+  auth_data:
+  events_data:
+  points_data:
+  web_data:
