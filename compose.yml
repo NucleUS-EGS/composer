@@ -16,7 +16,7 @@ services:
       - auth.env
 
   auth_db:
-    image: mysql
+    image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
@@ -46,7 +46,7 @@ services:
       - events.env
 
   events_db:
-    image: mysql
+    image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
@@ -78,7 +78,7 @@ services:
       - points.env
 
   points_db:
-    image: mysql
+    image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
@@ -110,7 +110,7 @@ services:
       - webapp.env
 
   web_db:
-    image: mysql
+    image: mysql:latest
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
