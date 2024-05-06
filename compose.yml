@@ -8,7 +8,7 @@ services:
       context: .
       dockerfile: auth.dockerfile
     command: flask run
-    network_mode: "bridge"
+    network_mode: "host"
     depends_on:
       auth_db: 
         condition: service_healthy 
@@ -41,7 +41,7 @@ services:
     depends_on:
       events_db:
         condition: service_healthy
-    network_mode: "bridge"
+    network_mode: "host"
     env_file:
       - events.env
 
@@ -70,7 +70,7 @@ services:
       dockerfile: points.dockerfile
     restart: always
     command: flask run
-    network_mode: "bridge"
+    network_mode: "host"
     depends_on:
       points_db:
         condition: service_healthy
@@ -102,7 +102,7 @@ services:
       dockerfile: webapp.dockerfile
     command: bash -c "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:3000 --noreload"
     restart: always
-    network_mode: "bridge"
+    network_mode: "host"
     depends_on:
       web_db:
         condition: service_healthy
