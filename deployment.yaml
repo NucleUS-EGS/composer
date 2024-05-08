@@ -1,0 +1,40 @@
+# webapp deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: webapp
+  namespace: egs-nucleus
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: registry.deti/egs-nucleus/webapp:v1
+        ports:
+        - containerPort: 3000
+
+# webapp service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp
+  namespace: egs-nucleus
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+  selector:
+    app: webapp
+
+
+# webapp mysql deployment
+
