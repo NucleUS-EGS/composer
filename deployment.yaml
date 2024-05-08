@@ -1,74 +1,360 @@
-# webapp deployment
+# # webapp deployment
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata: 
+#   name: webapp
+#   namespace: egs-nucleus
+# spec:
+#   replicas: 1
+#   selector: 
+#     matchLabels:
+#       app: webapp
+#   template:
+#     metadata:
+#       labels:
+#         app: webapp
+#     spec:
+#       containers:
+#       - name: webapp
+#         image: registry.deti/egs-nucleus/webapp:v1
+#         ports:
+#         - containerPort: 3000
+#         env:
+#         - name: DB_NAME
+#           value: webapp
+#         - name: DB_HOST
+#           value: webapp-db
+#         - name: DB_PORT
+#           value: "3300"
+#         - name: DB_USER
+#           value: root
+#         - name: DB_PASSWORD
+#           value: password  
+
+# # webapp service
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: webapp
+#   namespace: egs-nucleus
+# spec:
+#   ports:
+#   - port: 3000
+#     targetPort: 3000
+#   selector:
+#     app: webapp
+
+
+# # webapp mysql deployment
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: webapp-db
+#   namespace: egs-nucleus
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: webapp-db
+#   template:
+#     metadata:
+#       labels:
+#         app: webapp-db
+#     spec:
+#       containers:
+#       - name: webapp-db
+#         image: mysql:latest
+#         ports:
+#         - containerPort: 3300
+#         env:
+#         - name: MYSQL_ROOT_PASSWORD
+#           value: password
+#         - name: MYSQL_DATABASE
+#           value: webapp
+#         volumeMounts:
+#         - name: webapp-db-pvc
+#           mountPath: /data/db
+#       volumes:
+#       - name: webapp-db-pvc
+#         persistentVolumeClaim:
+#           claimName: webapp-db-pvc
+
+# # webapp mysql service
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: webapp-db
+#   namespace: egs-nucleus
+# spec:
+#   ports:
+#   - port: 3300
+#     targetPort: 3300
+#   selector:
+#     app: webapp-db
+
+# # webapp mysql data
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: webapp-db-pvc
+#   namespace: egs-nucleus
+# spec:
+#   accessModes:
+#     - ReadWriteMany
+#   storageClassName: longhorn
+#   resources:
+#     requests:
+#       storage: 20Mi
+
+
+# auth deployment
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: webapp
+  name: auth
   namespace: egs-nucleus
 spec:
   replicas: 1
   selector: 
     matchLabels:
-      app: webapp
+      app: auth
   template:
     metadata:
       labels:
-        app: webapp
+        app: auth
     spec:
       containers:
-      - name: webapp
-        image: registry.deti/egs-nucleus/webapp:v1
+      - name: auth
+        image: registry.deti/egs-nucleus/auth:v1
         ports:
-        - containerPort: 3000
+        - containerPort: 5000
+        env:
+        - name: FLASK_RUN_PORT
+          value: "5000"
+        - name: FLASK_RUN_HOST
+          value: "0.0.0.0"
+        - name: IDP_BASE_URL
+          value: "https://wso2-gw.ua.pt"
+        - name: IDP_REDIRECT_URI
+          value: "http://localhost:5000"
+        - name: CLIENT_ID
+          value: "agh44RajMJcYvCIq3lSMrutfPJ0a"
+        - name: CLIENT_SECRET
+          value: "WJckU0FSb41rsJHLnFPYqBFvSZoa"
+        - name: HOST
+          value: "auth-db"
+        - name: PORT
+          value: "3301"
+        - name: USER_NAME
+          value: "root"
+        - name: PASSWORD
+          value: "password"
+        - name: DATABASE
+          value: "auth"
+        - name: API_KEY
+          value: 892a04b7-683c-47c9-a345-b9e83acc1a62
 
-# webapp service
+# auth service
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: webapp
+  name: auth
   namespace: egs-nucleus
 spec:
   ports:
-  - port: 3000
-    targetPort: 3000
+  - port: 5000
+    targetPort: 5000
   selector:
-    app: webapp
+    app: auth
 
 
-# webapp mysql deployment
+# auth mysql deployment
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webapp-db
+  name: auth-db
   namespace: egs-nucleus
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: webapp-db
+      app: auth-db
   template:
     metadata:
       labels:
-        app: webapp-db
+        app: auth-db
     spec:
       containers:
-      - name: webapp-db
-        image: registry.deti/egs-nucleus/webapp-db:v1
+      - name: auth-db
+        image: mysql:latest
         ports:
-        - containerPort: 3300
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        - name: MYSQL_DATABASE
+          value: auth
+        volumeMounts:
+        - name: auth-db-pvc
+          mountPath: /data/db
+      volumes:
+      - name: auth-db-pvc
+        persistentVolumeClaim:
+          claimName: auth-db-pvc
 
-# webapp mysql service
+# auth mysql service
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: webapp-db
+  name: auth-db
   namespace: egs-nucleus
 spec:
   ports:
   - port: 3300
     targetPort: 3300
   selector:
-    app: webapp-db
+    app: auth-db
+
+# auth mysql data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: auth-db-pvc
+  namespace: egs-nucleus
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 20Mi
+
+
+# points deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: points
+  namespace: egs-nucleus
+spec:
+  replicas: 1
+  selector: 
+    matchLabels:
+      app: points
+  template:
+    metadata:
+      labels:
+        app: points
+    spec:
+      containers:
+      - name: points
+        image: registry.deti/egs-nucleus/points:v1
+        ports:
+        - containerPort: 8083
+        env:
+        - name: FLASK_RUN_PORT
+          value: "8083"
+        - name: FLASK_RUN_HOST
+          value: "0.0.0.0"
+        - name: DBMS
+          value: "mysql"
+        - name: USER_NAME
+          value: "root"
+        - name: PASSWORD
+          value: "EGS2324pass!"
+        - name: DATABASE
+          value: "POINTS"
+        - name: HOST
+          value: "points-db"
+        - name: PORT
+          value: "3303"       
+
+# points service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: points
+  namespace: egs-nucleus
+spec:
+  ports:
+  - port: 8083
+    targetPort: 8083
+  selector:
+    app: points
+
+
+# points mysql deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: points-db
+  namespace: egs-nucleus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: points-db
+  template:
+    metadata:
+      labels:
+        app: points-db
+    spec:
+      containers:
+      - name: points-db
+        image: mysql:latest
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+        - name: MYSQL_DATABASE
+          value: points
+        volumeMounts:
+        - name: points-db-pvc
+          mountPath: /data/db
+      volumes:
+      - name: points-db-pvc
+        persistentVolumeClaim:
+          claimName: points-db-pvc
+
+# points mysql service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: points-db
+  namespace: egs-nucleus
+spec:
+  ports:
+  - port: 3303
+    targetPort: 3303
+  selector:
+    app: points-db
+
+# points mysql data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: points-db-pvc
+  namespace: egs-nucleus
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 20Mi

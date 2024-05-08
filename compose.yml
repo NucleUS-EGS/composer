@@ -106,7 +106,6 @@ services:
     build:
       context: .
       dockerfile: webapp.dockerfile
-    command: bash -c "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:3000 --noreload"
     restart: always
     network_mode: "host"
     depends_on:
