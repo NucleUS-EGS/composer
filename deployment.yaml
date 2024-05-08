@@ -37,4 +37,38 @@ spec:
 
 
 # webapp mysql deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-db
+  namespace: egs-nucleus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp-db
+  template:
+    metadata:
+      labels:
+        app: webapp-db
+    spec:
+      containers:
+      - name: webapp-db
+        image: registry.deti/egs-nucleus/webapp-db:v1
+        ports:
+        - containerPort: 3300
 
+# webapp mysql service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-db
+  namespace: egs-nucleus
+spec:
+  ports:
+  - port: 3300
+    targetPort: 3300
+  selector:
+    app: webapp-db
