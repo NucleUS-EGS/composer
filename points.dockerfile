@@ -18,3 +18,5 @@ RUN pip install -r requirements.txt
 
 # Copy the external code into the working directory
 COPY points-system/ /app/
+
+CMD ["flask", "run"]
