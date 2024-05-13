@@ -7,6 +7,3 @@
 [submodule "events"]
 	path = events
 	url = git@github.com:NucleUS-EGS/events.git
-[submodule "points-system"]
-	path = points-system
-	url = git@github.com:NucleUS-EGS/points-system.git
