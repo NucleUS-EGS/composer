@@ -4,9 +4,9 @@
 [submodule "webapp"]
 	path = webapp
 	url = git@github.com:NucleUS-EGS/webapp.git
-[submodule "points-system"]
-	path = points-system
-	url = git@github.com:NucleUS-EGS/points-system.git
 [submodule "events"]
 	path = events
 	url = git@github.com:NucleUS-EGS/events.git
+[submodule "points-system"]
+	path = points-system
+	url = git@github.com:NucleUS-EGS/points-system.git

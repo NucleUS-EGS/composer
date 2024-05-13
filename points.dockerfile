@@ -4,19 +4,9 @@ FROM python:3.10
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends
 
-# Execute the command to create a folder
-RUN mkdir /app
-
-# Define the working directory of a Docker container
 WORKDIR /app
 
-# Copy external files into the working directory
-COPY points-system/requirements.txt /app/
+COPY points/requirements.txt /app/
+RUN pip3 install -r requirements.txt
 
-# Execute the pip to install the dependencies
-RUN pip install -r requirements.txt
-
-# Copy the external code into the working directory
-COPY points-system/ /app/
-
-CMD ["flask", "run"]
+COPY points/ /app/
