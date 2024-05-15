@@ -7,11 +7,8 @@ services:
     build:
       context: .
       dockerfile: auth.dockerfile
+    restart: always
     command: flask run
-    network_mode: "host"
-    depends_on:
-      auth_db: 
-        condition: service_healthy 
     env_file:
       - auth.env
     volumes:
@@ -28,10 +25,6 @@ services:
       - 3301:3306
     volumes:
     - auth_data:/data/db
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
 
   # Events service
   events:
@@ -39,11 +32,8 @@ services:
     build:
       context: .
       dockerfile: events.dockerfile
+    restart: always
     command: flask run
-    depends_on:
-      events_db:
-        condition: service_healthy
-    network_mode: "host"
     env_file:
       - events.env
     volumes:
@@ -60,10 +50,6 @@ services:
       - "3302:3306"
     volumes:
       - events_data:/data/db
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
 
 
   # Points service
@@ -74,10 +60,6 @@ services:
       dockerfile: points.dockerfile
     restart: always
     command: flask run
-    network_mode: "host"
-    depends_on:
-      points_db:
-        condition: service_healthy
     env_file:
       - points.env
     volumes:
@@ -94,10 +76,6 @@ services:
       - 3303:3306
     volumes:
       - points_data:/data/db
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
       
 
   #Webapp
@@ -108,10 +86,6 @@ services:
       dockerfile: webapp.dockerfile
     command: bash -c "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:3000 --noreload"
     restart: always
-    network_mode: "host"
-    depends_on:
-      web_db:
-        condition: service_healthy
     env_file:
       - webapp.env
     volumes:
@@ -128,10 +102,6 @@ services:
       - 3300:3306
     volumes:
       - web_data:/data/db
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
 
 
   # Adminer
