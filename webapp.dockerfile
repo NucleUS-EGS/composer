@@ -11,3 +11,5 @@ RUN pip3 install -r requirements.txt
 COPY webapp/ /app/
 
 EXPOSE 3000
+
+CMD ["sh", "-c", "python3 manage.py migrate --noinput && python3 manage.py runserver 0.0.0.0:3000 --noreload"]
