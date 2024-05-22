@@ -11,4 +11,5 @@ RUN pip3 install -r requirements.txt
 
 COPY points/ /app/
 
-CMD ["python", "app.py"]
+# CMD ["python", "app.py"]
+CMD ["flask", "run"]
