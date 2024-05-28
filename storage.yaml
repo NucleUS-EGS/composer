@@ -1,0 +1,59 @@
+# webapp mysql data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: web-db-pvc
+  namespace: egs-nucleus
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 20Mi
+
+# auth mysql data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: auth-db-pvc
+  namespace: egs-nucleus
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 20Mi
+
+# points mysql data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: points-db-pvc
+  namespace: egs-nucleus
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 20Mi
+
+# points mysql data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: events-db-pvc
+  namespace: egs-nucleus
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 20Mi

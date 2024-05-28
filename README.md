@@ -72,6 +72,7 @@ docker push registry.deti/egs-nucleus/<image_name>:<version>
 ### Deploy
 
 ```bash
+kubectl apply -f storage.yaml
 kubectl apply -f deployment.yaml
 ```
 
@@ -79,4 +80,5 @@ kubectl apply -f deployment.yaml
 
 ```
 kubectl delete -f deployment.yaml
+kubectl delete -f storage.yaml
 ```

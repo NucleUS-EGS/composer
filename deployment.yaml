@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: web
-        image: registry.deti/egs-nucleus/webapp:v2
+        image: registry.deti/egs-nucleus/webapp:v3
         ports:
         - containerPort: 3000
         env:
@@ -112,21 +112,6 @@ spec:
   selector:
     app: web-db
 
-# webapp mysql data
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: web-db-pvc
-  namespace: egs-nucleus
-spec:
-  accessModes:
-    - ReadWriteMany
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 20Mi
-
 
 # auth deployment
 ---
@@ -147,7 +132,7 @@ spec:
     spec:
       containers:
       - name: auth
-        image: registry.deti/egs-nucleus/auth:v3
+        image: registry.deti/egs-nucleus/auth:v4
         ports:
         - containerPort: 5000
         env:
@@ -242,21 +227,6 @@ spec:
   selector:
     app: auth-db
 
-# auth mysql data
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: auth-db-pvc
-  namespace: egs-nucleus
-spec:
-  accessModes:
-    - ReadWriteMany
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 20Mi
-
 
 # points deployment
 ---
@@ -277,7 +247,7 @@ spec:
     spec:
       containers:
       - name: points
-        image: registry.deti/egs-nucleus/points:v6
+        image: registry.deti/egs-nucleus/points:v7
         ports:
         - containerPort: 5002
         env:
@@ -364,20 +334,6 @@ spec:
   selector:
     app: points-db
 
-# points mysql data
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: points-db-pvc
-  namespace: egs-nucleus
-spec:
-  accessModes:
-    - ReadWriteMany
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 20Mi
 
 # events deployment
 ---
@@ -398,7 +354,7 @@ spec:
     spec:
       containers:
       - name: events
-        image: registry.deti/egs-nucleus/events:v9
+        image: registry.deti/egs-nucleus/events:v10
         ports:
         - containerPort: 5001
         env:
@@ -484,21 +440,6 @@ spec:
     targetPort: 3306
   selector:
     app: events-db
-
-# points mysql data
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: events-db-pvc
-  namespace: egs-nucleus
-spec:
-  accessModes:
-    - ReadWriteMany
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 20Mi
 
 
 # adminer deployment
