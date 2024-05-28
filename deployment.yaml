@@ -3,20 +3,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: webapp
+  name: web
   namespace: egs-nucleus
 spec:
   replicas: 1
   selector: 
     matchLabels:
-      app: webapp
+      app: web
   template:
     metadata:
       labels:
-        app: webapp
+        app: web
     spec:
       containers:
-      - name: webapp
+      - name: web
         image: registry.deti/egs-nucleus/webapp:v2
         ports:
         - containerPort: 3000
@@ -24,7 +24,7 @@ spec:
         - name: DB_NAME
           value: webapp
         - name: DB_HOST
-          value: webapp-db
+          value: web-db
         - name: DB_PORT
           value: "3306"
         - name: DB_USER
@@ -35,15 +35,15 @@ spec:
           value: web:3000/api/v1
         - name: AUTH_SERVICE_URL
           value: auth:5000/v1
-        - name: AUTH_SERVICE_API_KEY
+        - name: AUTH_SERVICE_KEY
           value: 892a04b7-683c-47c9-a345-b9e83acc1a62
         - name: POINTS_SERVICE_URL
           value: points:5002/v1
-        - name: POINTS_SERVICE_API_KEY
+        - name: POINTS_SERVICE_KEY
           value: b899dd7f-b658-457a-8427-5c9ed02957aa
         - name: EVENTS_SERVICE_URL
           value: events:5001/v1
-        - name: EVENTS_SERVICE_API_KEY
+        - name: EVENTS_SERVICE_KEY
           value: 05493297-de9e-48a5-b428-71586e04875
         - name: PORT
           value: "80"
@@ -53,14 +53,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: webapp
+  name: web
   namespace: egs-nucleus
 spec:
   ports:
   - port: 3000
     targetPort: 3000
   selector:
-    app: webapp
+    app: web
 
 
 # webapp mysql deployment
@@ -68,20 +68,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: webapp-db
+  name: web-db
   namespace: egs-nucleus
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: webapp-db
+      app: web-db
   template:
     metadata:
       labels:
-        app: webapp-db
+        app: web-db
     spec:
       containers:
-      - name: webapp-db
+      - name: web-db
         image: mysql:latest
         ports:
         - containerPort: 3306
@@ -91,33 +91,33 @@ spec:
         - name: MYSQL_DATABASE
           value: webapp
         volumeMounts:
-        - name: webapp-db-pvc
+        - name: web-db-pvc
           mountPath: /data/db
       volumes:
-      - name: webapp-db-pvc
+      - name: web-db-pvc
         persistentVolumeClaim:
-          claimName: webapp-db-pvc
+          claimName: web-db-pvc
 
 # webapp mysql service
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: webapp-db
+  name: web-db
   namespace: egs-nucleus
 spec:
   ports:
   - port: 3306
     targetPort: 3306
   selector:
-    app: webapp-db
+    app: web-db
 
 # webapp mysql data
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: webapp-db-pvc
+  name: web-db-pvc
   namespace: egs-nucleus
 spec:
   accessModes:
@@ -501,6 +501,43 @@ spec:
       storage: 20Mi
 
 
+# adminer deployment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adminer
+  namespace: egs-nucleus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: adminer
+  template:
+    metadata:
+      labels:
+        app: adminer
+    spec:
+      containers:
+      - name: adminer
+        image: adminer
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: adminer
+  namespace: egs-nucleus
+spec:
+  selector:
+    app: adminer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+
+
 # nginx deployment
 ---
 apiVersion: apps/v1
@@ -520,7 +557,7 @@ spec:
         app: nginx
     spec:
       containers:
-        - image: registry.deti/egs-nucleus/nginx:v2
+        - image: registry.deti/egs-nucleus/nginx:v5
           name: nginx
           ports:
             - containerPort: 80
