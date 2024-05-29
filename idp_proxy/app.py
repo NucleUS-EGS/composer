@@ -13,7 +13,8 @@ app.secret_key = "secret_key"
 CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 IDP_BASE_URL = os.environ.get('IDP_BASE_URL')
-REDIRECT_URI = 'http://localhost:5000'
+REDIRECT_URI = os.environ.get('IDP_REDIRECT_URI')
+APP_REDIRECT_URI = os.environ.get('APP_REDIRECT_URI')
 
 @app.route('/')
 def index():
@@ -57,8 +58,8 @@ def index():
 				'email': email
 			}
 	
-			# redirect to localhost and put data in url 
-			url = f"http://localhost:8080/auth/v1/idp?{urllib.parse.urlencode(data)}"
+			# redirect to main app and put data in url 
+			url = f"{APP_REDIRECT_URI}?{urllib.parse.urlencode(data)}"
 			return redirect(url)
 		else:
 			return jsonify({'message': 'Server error'}), 500

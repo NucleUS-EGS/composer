@@ -35,6 +35,9 @@ IDP_REDIRECT_URI = "http://localhost:5000" # One of the enforced redirect URIs
 IDP_BASE_URL = "https://wso2-gw.ua.pt"
 CLIENT_ID = <CLIENT_ID>
 CLIENT_SECRET = <CLIENT_SECRET>
+
+# APP_REDIRECT_URI = "http://localhost:8080/auth/v1/idp"
+APP_REDIRECT_URI = "http://http://grupo5-egs-deti.ua.pt/auth/v1/idp"
 ```
 
 
@@ -43,8 +46,39 @@ CLIENT_SECRET = <CLIENT_SECRET>
 flask run
 ```
 
-## Build and run
+## Docker
 
 ```
 docker-compose up --build
+```
+
+## Kubernetes
+
+### Build and push images
+
+For each service (auth, events, nginx, points and webapp), build the image and push it to the registry.
+
+```bash
+./service.sh <image_name> <version>
+```
+
+or
+
+```bash
+docker buildx build --platform linux/amd64 --network=host -t registry.deti/egs-nucleus/<image_name>:<version> -f <image_name>.dockerfile .
+docker push registry.deti/egs-nucleus/<image_name>:<version>
+```
+
+### Deploy
+
+```bash
+kubectl apply -f storage.yaml
+kubectl apply -f deployment.yaml
+```
+
+### Delete
+
+```
+kubectl delete -f deployment.yaml
+kubectl delete -f storage.yaml
 ```
